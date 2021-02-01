@@ -1,0 +1,263 @@
+<html>
+    <head>
+        <title>dinamic Table</title>
+        <script>
+            function set(){
+                window.detail = [
+                    { name:"parth",email:"parth@gmail.com",contact:"7778945678",gender:"Male" },
+                    { name:"trusha",email:"trusha@gmail.com",contact:"9871234565",gender:"Female" },
+                    { name:"hariom",email:"harion@gmail.com",contact:"9999999999",gender:"Male" },
+                    { name:"jainee",email:"jainee@gmail.com",contact:"7777777777",gender:"Female" },
+                    { name:"mitashu",email:"mitashu@gmail.com",contact:"5556661237",gender:"Male" }
+                ];
+                window.check = false;
+                let tbody = document.getElementById('tbody');
+                let inner = "";
+
+                for(var i=0; i<detail.length;i++){
+                    inner += output(detail[i]);
+                }
+                tbody.innerHTML+= inner;
+            }
+
+            function validate(){
+                let name= document.getElementById('name').value;
+                let email= document.getElementById('email').value;
+                let contact= document.getElementById('contact').value;
+
+                let regExpName = /^[a-zA-Z]{2,32}$/;
+                let regExpEmail=/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+                let regExpContact=/^[0-9]{10}$/;
+
+                var checkErr = true;
+                if(!regExpName.test(name)){
+                    document.getElementById("errNameMesssage").style.visibility = "visible"; 
+                    checkErr = false;
+                }
+                else{
+                    document.getElementById("errNameMesssage").style.visibility = "hidden";
+                }
+                if(!regExpEmail.test(email)){
+                    document.getElementById('errEmailMesssage').style.visibility ='visible'; 
+                    checkErr = false;
+                }
+                else{
+                    document.getElementById('errEmailMesssage').style.visibility ='hidden';
+                }
+                if(!regExpContact.test(contact)){
+                    document.getElementById('errContactMesssage').style.visibility ='visible'; 
+                    checkErr = false;
+                }
+                else{
+                    document.getElementById('errContactMesssage').style.visibility ='hidden';  
+                }
+                
+                return checkErr;
+            }
+
+            function addDetail(){
+                let e= validate();
+                if(!e){
+                    return false;
+                }
+
+                var name = document.getElementById('name').value,
+                    email =document.getElementById('email').value,
+                    contact = document.getElementById('contact').value;
+
+                let detailValue={
+                    name: name,
+                    email: email,
+                    contact: contact,
+                    gender: getRadioButtonValue()
+                }
+                window.detail.push(detailValue);
+                let tbody = document.getElementById('tbody');
+                let tr = "";
+
+                tr = output(detailValue);
+                tbody.innerHTML += tr;
+
+                name ='';
+                email = '';
+                contact ='';
+            }
+
+            function getRadioButtonValue(){
+                let gender = document.getElementsByName('gender');
+
+                if(gender[0].checked){
+                    return gender[0].value;
+                }
+                else{
+                    return gender[1].value;
+                }
+            }
+
+            function output(detail){
+                return `<tr id=''><td><input type='checkbox'  class = 'near' name='checkbox' id='checkbox' onchange='checkRow()'></td><td>${detail.name}</td><td>${detail.email}
+                        </td><td>${detail.contact}</td><td>${detail.gender}</td></tr>`;
+            }
+
+            function nowSearch(){
+                let strname = document.getElementById('searchByName').value,
+                    stremail = document.getElementById('searchByEmail').value,
+                    strcontact = document.getElementById('searchByContact').value,
+                    strgender = document.getElementById('gender1').value;
+                
+                let inner="",
+                    tbody = document.getElementById('tbody');
+                
+                if(strgender == 'Male'){
+                    for(var i=0; i<detail.length;i++){
+                        if(detail[i].gender == 'Male'){
+                            inner += nowSearchByGender(i,strname,stremail,strcontact,inner);
+                        }
+                    }
+                }
+                else if(strgender == 'Female'){
+                    for(var i=0; i<detail.length;i++){
+                        if(detail[i].gender == 'Female'){
+                            inner += nowSearchByGender(i,strname,stremail,strcontact,inner);
+                        }
+                    }
+                }
+                else{
+                    for(var i=0; i<detail.length;i++){
+                        inner += nowSearchByGender(i,strname,stremail,strcontact,inner);
+                    }
+                }
+                tbody.innerHTML= inner;
+            }
+
+            function nowSearchByGender(i,strname,stremail,strcontact){
+                let inner="";
+                if(strname='' || detail[i].name.match(strname)){ 
+                    if(stremail='' || detail[i].email.match(stremail)){ 
+                        if(strcontact='' || detail[i].contact.match(strcontact)){
+                            inner = output(detail[i]);
+                        }
+                    }
+                } 
+                return inner;
+            }
+            function deleteCheckedRow(){
+
+                let ex2 = document.querySelectorAll("input[type='checkbox']:checked");
+                ex2.forEach((ele)=>{
+                    ele.parentNode.parentNode.remove();
+                })
+
+                /*let tbody = document.getElementById("tbody"),
+                    i,
+                    row,
+                    inputs;
+
+                for(i=tbody.rows.length-1;i>=0;i--){
+                    row= tbody.rows[i];
+                    inputs= row.getElementsByTagName('input');
+                    if (inputs[0].checked){
+                        row.remove(row);
+                    }
+                }*/
+            }
+
+            function checkAll(){
+                let tbody = document.getElementById("tbody"),
+                    row,
+                    inputs;
+                if(!check){
+                    for(var i=0;i<tbody.rows.length;i++){
+                        row= tbody.rows[i];
+                        inputs= row.getElementsByTagName('input');
+                        inputs[0].checked = true;
+                        check = true;
+                }}
+                else{                
+                    for(var i=0;i<tbody.rows.length;i++){
+                        row= tbody.rows[i];
+                        inputs= row.getElementsByTagName('input');
+                        inputs[0].checked = false;
+                        check = false;
+                    }
+                }
+            }
+
+            function checkRow(){
+                let count =0,
+                    tbody = document.getElementById("tbody"),
+                    row,
+                    inputs;
+                for(var i=0;i<tbody.rows.length;i++){
+                    row= tbody.rows[i];
+                    inputs= row.getElementsByTagName('input');
+                    if(inputs[0].checked == true){
+                        count++;
+                    }
+                }
+                if(count == detail.length){
+                    document.getElementById('checkboxAll').checked = true; 
+                    check = true;
+                }
+                else{
+                    document.getElementById('checkboxAll').checked = false;
+                    check = false; 
+                }
+            }
+        </script>
+    </head>
+    <body onload="set()">
+        <form >
+            <table>
+                <tr>
+                    <td>Enter Name:</td>
+                    <td><input type="text" name="name" id="name"></td>
+                    <td><p style="color:red;visibility:hidden" id="errNameMesssage">*Require valid Name</p></td>
+                </tr>
+                <tr>
+                    <td>Enter Email:</td>
+                    <td><input type="email" name="email" id="email" required></td>
+                    <td><p style="color:red;visibility:hidden" id="errEmailMesssage">*Require valid Email</p>
+                </tr>
+                <tr>
+                   <td>Contact No.:</td>
+                   <td><input type="text" name="Contact" id="contact" required></td>
+                   <td><p style="color:red;visibility:hidden" id="errContactMesssage">*Require valid contact No.</p></td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="gender" value="Male" checked>Male</td>
+                    <td><input type="radio" name="gender" value="Female">Female</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="button" value="Add" onclick="addDetail()"></td>
+                </tr>
+            </table>
+            <br><br><br>
+            <input type="button" value="Delete" onclick="deleteCheckedRow()">
+            <br><br>
+            <table border="1" id="table">
+                <tr>
+                    <th><input type="checkbox" name="all" id="checkboxAll" onchange="checkAll()"></th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact No.</th>
+                    <th>Gender</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="text" name="name" id="searchByName" onkeyup="nowSearch()"></td>
+                    <td><input type="text" name="email" id="searchByEmail" onkeyup="nowSearch()"></td>
+                    <td><input type="text" name="contact" id="searchByContact" onkeyup="nowSearch()"></td>
+                    <td><select name="gender1" id="gender1" onchange="nowSearch()">
+                        <option value="both">Select All</option>
+                        <option value="Male" >Male</option>
+                        <option value="Female" >Female</option>
+                    </select></td>
+                </tr>
+                <tbody id="tbody"></tbody>
+            </table>
+        </form>
+        
+    </body>
+</html>
